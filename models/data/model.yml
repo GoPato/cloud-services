@@ -1,0 +1,14 @@
+Resources:
+  DataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:provider.environment.DATA_TABLE}
+      AttributeDefinitions:
+        - AttributeName: dataId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: dataId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.tableThroughput}
+        WriteCapacityUnits: ${self:custom.tableThroughput}

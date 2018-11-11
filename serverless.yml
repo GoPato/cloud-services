@@ -1,0 +1,63 @@
+service: GopatoCloudServices
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: development
+  environment:
+    DATA_TABLE: ${self:custom.servicePrefix}DataTable
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { Fn::GetAtt: [DataTable, Arn] }
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
+  servicePrefix: ${self:custom.stage}${self:service}
+  # accountId: #{AWS::AccountId}
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  dynamodb:
+    seeds:
+      - table: ${self:provider.environment.DATA_TABLE}
+        sources:
+          - "./models/data/seed.json"
+  tableThroughputs:
+    prod: 5
+    default: 1
+  tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
+  appSync:
+    name: ${self:custom.servicePrefix}Appsync
+    schema: graphql/schema.graphql
+    serviceRole: ${self:custom.appSync.name}LambdaRole
+    authenticationType: API_KEY
+    mappingTemplatesLocation: graphql
+    mappingTemplates: ${file(graphql/data/mapping-templates.yml)}
+    dataSources: ${file(graphql/data/data-sources.yml)}
+
+plugins:
+  - serverless-dotenv-plugin
+  - "@gopato/serverless-dynamodb-local-plugin"
+  - "@gopato/serverless-dynamodb-jest-plugin"
+  - serverless-webpack
+  - serverless-appsync-plugin
+
+functions:
+  - ${file(functions/data/functions.yml)}
+
+resources:
+  # Auth
+  # Models
+  - ${file(models/data/model.yml)}
+  # GraphQL
+  - ${file(graphql/role.yml)}

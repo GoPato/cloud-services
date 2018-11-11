@@ -1,0 +1,96 @@
+version: 2
+
+references:
+  container_config: &container_config
+    working_directory: ~/tmp
+    docker:
+      - image: circleci/openjdk:10.0.2-jdk-node-browsers-legacy
+  add_workspace: &add_workspace
+    attach_workspace:
+      at: .
+
+jobs:
+  checkout:
+    <<: *container_config
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - core-dependencies-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Check yarn version
+          command: yarn --version
+      - run:
+          name: Install dependencies
+          command: yarn install
+      - save_cache:
+          key: core-dependencies-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  lint:
+    <<: *container_config
+    steps:
+      - *add_workspace
+      - run:
+          name: Run eslint
+          command: yarn lint
+      - run:
+          name: Run flow type check
+          command: yarn flow
+  test:
+    <<: *container_config
+    steps:
+      - *add_workspace
+      - run:
+          name: Run tests
+          command: yarn test
+  deploy-staging:
+    <<: *container_config
+    steps:
+      - *add_workspace
+      - deploy:
+          name: Deploy to staging
+          command: yarn deploy --stage staging
+  deploy-production:
+    <<: *container_config
+    steps:
+      - *add_workspace
+      - deploy:
+          name: Deploy to production
+          command: yarn deploy --stage production
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - checkout
+      - lint:
+          requires:
+            - checkout
+      - test:
+          requires:
+            - checkout
+      - deploy-staging:
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              only: master
+      - approve-deploy:
+          type: approval
+          requires:
+            - deploy-staging
+          filters:
+            branches:
+              only: master
+      - deploy-production:
+          requires:
+            - approve-deploy
+          filters:
+            branches:
+              only: master
