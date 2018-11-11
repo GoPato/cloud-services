@@ -1,0 +1,23 @@
+[
+  {
+    "userId": "user-1",
+    "email": "ironman@avengers.io",
+    "phone": "+50680000001",
+    "firstName": "Tony",
+    "lastName": "Stark"
+  },
+  {
+    "userId": "user-2",
+    "email": "spiderman@avengers.io",
+    "phone": "+50680000002",
+    "firstName": "Peter",
+    "lastName": "Parker"
+  },
+  {
+    "userId": "user-3",
+    "email": "hulk@avengers.io",
+    "phone": "+50680000003",
+    "firstName": "Bruce",
+    "lastName": "Banner"
+  }
+]

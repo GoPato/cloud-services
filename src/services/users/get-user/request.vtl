@@ -1,0 +1,13 @@
+#if ($context.arguments.userId)
+  #set ($userId = $context.arguments.userId) 
+#else
+  #set ($userId = $context.identity.sub)
+#end
+
+{
+  "version": "2017-02-28",
+  "operation": "Invoke",
+  "payload": {
+    "userId": $utils.toJson($userId)
+  }
+}

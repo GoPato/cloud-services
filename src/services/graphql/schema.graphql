@@ -1,0 +1,41 @@
+enum Gender {
+  MALE
+  FEMALE
+}
+
+type User {
+  userId: ID!
+  email: String!
+  phone: String!
+  firstName: String!
+  lastName: String!
+  birthday: Int
+  gender: Gender
+  idNumber: Int
+  picture: String
+}
+
+input UserInput {
+  email: String
+  phone: String
+  firstName: String
+  lastName: String
+  birthday: Int
+  gender: Gender
+  idNumber: Int
+  picture: String
+}
+
+type Query {
+  user(userId: ID): User
+  users: [User]
+}
+
+type Mutation {
+  updateUser(userId: ID, user: UserInput!): User
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}

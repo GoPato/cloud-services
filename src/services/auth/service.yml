@@ -1,0 +1,137 @@
+resources:
+  Resources:
+    CognitoUserPoolUsers:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:custom.servicePrefix}UserPool
+        UsernameAttributes:
+          - email
+          - phone_number
+        AutoVerifiedAttributes:
+          - phone_number
+        Schema:
+          - Name: name
+            AttributeDataType: String
+            Required: True
+          - Name: family_name
+            AttributeDataType: String
+            Required: True
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+            RequireLowercase: false
+            RequireNumbers: false
+            RequireSymbols: false
+            RequireUppercase: false
+        SmsConfiguration:
+          SnsCallerArn:
+            Fn::GetAtt: [CognitoSNSRole, Arn]
+          ExternalId: ${self:custom.servicePrefix}SNSExternalId
+    CognitoUserPoolAdminsGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: Admins
+        Precedence: 1
+        UserPoolId:
+          Ref: CognitoUserPoolUsers
+    CognitoUserPoolAgentsGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: Agents
+        Precedence: 2
+        UserPoolId:
+          Ref: CognitoUserPoolUsers
+    CognitoUserPoolPatosGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: Patos
+        Precedence: 3
+        UserPoolId:
+          Ref: CognitoUserPoolUsers
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:custom.servicePrefix}UserPoolClient
+        UserPoolId:
+          Ref: CognitoUserPoolUsers
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+        GenerateSecret: false
+    CognitoIdentityPool:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: ${self:custom.servicePrefix}CognitoIdentityPool
+        AllowUnauthenticatedIdentities: true
+        CognitoIdentityProviders:
+          - ClientId:
+              Ref: CognitoUserPoolClient
+            ProviderName:
+              Fn::GetAtt: ["CognitoUserPoolUsers", "ProviderName"]
+    CognitoIdentityPoolRoles:
+      Type: AWS::Cognito::IdentityPoolRoleAttachment
+      Properties:
+        IdentityPoolId:
+          Ref: CognitoIdentityPool
+        Roles:
+          authenticated:
+            Fn::GetAtt: [CognitoAuthRole, Arn]
+    CognitoAuthRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.servicePrefix}CognitoAuthRole
+        Path: /
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Federated: "cognito-identity.amazonaws.com"
+              Action:
+                - "sts:AssumeRoleWithWebIdentity"
+              Condition:
+                StringEquals:
+                  "cognito-identity.amazonaws.com:aud":
+                    Ref: CognitoIdentityPool
+                "ForAnyValue:StringLike":
+                  "cognito-identity.amazonaws.com:amr": authenticated
+        Policies:
+          - PolicyName: "CognitoAuthorizedPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "mobileanalytics:PutEvents"
+                    - "cognito-sync:*"
+                    - "cognito-identity:*"
+                  Resource: "*"
+                - Effect: "Allow"
+                  Action:
+                    - "execute-api:Invoke"
+                  Resource: "*"
+    CognitoSNSRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.servicePrefix}CognitoSNSRole
+        Path: /
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "cognito-idp.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+              Condition:
+                StringEquals:
+                  "sts:ExternalId": "${self:custom.servicePrefix}SNSExternalId"
+        Policies:
+          - PolicyName: "CognitoSMSPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "sns:publish"
+                  Resource: "*"

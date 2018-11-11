@@ -1,0 +1,41 @@
+config:
+  name: ${self:custom.servicePrefix}Appsync
+  schema: src/services/graphql/schema.graphql
+  serviceRole: ${self:custom.appSync.name}LambdaRole
+  authenticationType: AMAZON_COGNITO_USER_POOLS
+  userPoolConfig:
+    awsRegion: #{AWS::Region}
+    defaultAction: ALLOW
+    userPoolId: { Ref: CognitoUserPoolUsers }
+  dataSources: ${file(src/services/users/service.yml):dataSources}
+  mappingTemplates: ${file(src/services/users/service.yml):mappingTemplates}
+  mappingTemplatesLocation: src/services
+
+resources:
+  Resources:
+    AppSyncLambdaServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.appSync.serviceRole}
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - appsync.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        Policies:
+          - PolicyName: ${self:custom.appSync.serviceRole}Policy
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:invokeFunction
+                  Resource:
+                    # Users
+                    - { Fn::GetAtt: [GetAllUsersLambdaFunction, Arn] }
+                    - { Fn::GetAtt: [GetUserLambdaFunction, Arn] }
+                    - { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
