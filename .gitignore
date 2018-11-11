@@ -1,0 +1,19 @@
+# package directories
+node_modules
+jspm_packages
+flow-typed
+
+# Temp directories
+.serverless
+.webpack
+
+# Log files
+*.log
+
+# Local database
+.db
+.dynamodb
+
+# Environment files
+.env
+.env.development
