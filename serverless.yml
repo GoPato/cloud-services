@@ -5,7 +5,7 @@ provider:
   runtime: nodejs8.10
   stage: development
   environment:
-    DATA_TABLE: ${self:custom.servicePrefix}DataTable
+    USERS_TABLE: ${self:custom.servicePrefix}UsersTable
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -17,7 +17,7 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - { Fn::GetAtt: [DataTable, Arn] }
+        - { Fn::GetAtt: [UsersTable, Arn] }
 
 custom:
   stage: ${opt:stage, self:provider.stage}
@@ -29,21 +29,14 @@ custom:
     includeModules: true
   dynamodb:
     seeds:
-      - table: ${self:provider.environment.DATA_TABLE}
+      - table: ${self:provider.environment.USERS_TABLE}
         sources:
-          - "./models/data/seed.json"
+          - "./src/services/users/__fixtures__/seed.json"
   tableThroughputs:
     prod: 5
     default: 1
   tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
-  appSync:
-    name: ${self:custom.servicePrefix}Appsync
-    schema: graphql/schema.graphql
-    serviceRole: ${self:custom.appSync.name}LambdaRole
-    authenticationType: API_KEY
-    mappingTemplatesLocation: graphql
-    mappingTemplates: ${file(graphql/data/mapping-templates.yml)}
-    dataSources: ${file(graphql/data/data-sources.yml)}
+  appSync: ${file(src/services/graphql/service.yml):config}
 
 plugins:
   - serverless-dotenv-plugin
@@ -53,11 +46,9 @@ plugins:
   - serverless-appsync-plugin
 
 functions:
-  - ${file(functions/data/functions.yml)}
+  - ${file(src/services/users/service.yml):functions}
 
 resources:
-  # Auth
-  # Models
-  - ${file(models/data/model.yml)}
-  # GraphQL
-  - ${file(graphql/role.yml)}
+  - ${file(src/services/auth/service.yml):resources}
+  - ${file(src/services/graphql/service.yml):resources}
+  - ${file(src/services/users/service.yml):resources}

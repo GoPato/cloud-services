@@ -1,4 +1,0 @@
-listData:
-  handler: functions/data/handlers/list-data.default
-createData:
-  handler: functions/data/handlers/create-data.default

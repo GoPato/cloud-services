@@ -1,0 +1,53 @@
+functions:
+  createUser:
+    handler: src/services/users/handler.create
+    events:
+      - cognitoUserPool:
+          pool: Users
+          trigger: PostConfirmation
+  getAllUsers:
+    handler: src/services/users/handler.getAll
+  getUser:
+    handler: src/services/users/handler.get
+  updateUser:
+    handler: src/services/users/handler.update
+
+dataSources:
+  - type: AWS_LAMBDA
+    name: GetUserDataSource
+    config:
+      lambdaFunctionArn: { Fn::GetAtt: [GetUserLambdaFunction, Arn] }
+      serviceRoleArn: { Fn::GetAtt: [AppSyncLambdaServiceRole, Arn] }
+  - type: AWS_LAMBDA
+    name: GetAllUsersDataSource
+    config:
+      lambdaFunctionArn: { Fn::GetAtt: [GetAllUsersLambdaFunction, Arn] }
+      serviceRoleArn: { Fn::GetAtt: [AppSyncLambdaServiceRole, Arn] }
+
+mappingTemplates:
+  - dataSource: GetUserDataSource
+    type: Query
+    field: user
+    request: "users/get-user/request.vtl"
+    response: "users/get-user/response.vtl"
+  - dataSource: GetAllUsersDataSource
+    type: Query
+    field: users
+    request: "users/get-all-users/request.vtl"
+    response: "users/get-all-users/response.vtl"
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.USERS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: ${self:custom.tableThroughput}
+          WriteCapacityUnits: ${self:custom.tableThroughput}
