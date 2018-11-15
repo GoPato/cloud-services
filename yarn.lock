@@ -8122,6 +8122,7 @@ yn@^2.0.0:
 yup@^0.26.6:
   version "0.26.6"
   resolved "https://registry.yarnpkg.com/yup/-/yup-0.26.6.tgz#07e216a1424861f17958fef1d4775c64ef985724"
+  integrity sha512-Lfj8pAtQ/cDu/wsCuXt2ArQ0uUO/9nfr+EwlD9oQrWIErtjURjdSXYTS1ycN7T/Ok+IUTy23Tdo6Wo0f/wMMBw==
   dependencies:
     "@babel/runtime" "7.0.0"
     fn-name "~2.0.1"

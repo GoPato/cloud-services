@@ -7,7 +7,8 @@ beforeEach(() => User.setupTable())
 afterEach(() => User.teardownTable())
 
 it('should return the requested user', async () => {
-  const { userId } = usersSeed[0]
+  const testUser = usersSeed[0]
+  const { userId } = testUser
   const { user } = await getUser({ userId })
-  expect(await User.get({ userId })).toEqual(user)
+  expect(user).toEqual(testUser)
 })

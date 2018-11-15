@@ -10,10 +10,12 @@ resources:
         AutoVerifiedAttributes:
           - phone_number
         Schema:
-          - Name: first_name
+          - Name: name
             AttributeDataType: String
-          - Name: last_name
+            Required: True
+          - Name: family_name
             AttributeDataType: String
+            Required: True
         Policies:
           PasswordPolicy:
             MinimumLength: 6
@@ -25,6 +27,27 @@ resources:
           SnsCallerArn:
             Fn::GetAtt: [CognitoSNSRole, Arn]
           ExternalId: ${self:custom.servicePrefix}SNSExternalId
+    CognitoUserPoolAdminsGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: Admins
+        Precedence: 1
+        UserPoolId:
+          Ref: CognitoUserPoolUsers
+    CognitoUserPoolAgentsGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: Agents
+        Precedence: 2
+        UserPoolId:
+          Ref: CognitoUserPoolUsers
+    CognitoUserPoolPatosGroup:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        GroupName: Patos
+        Precedence: 3
+        UserPoolId:
+          Ref: CognitoUserPoolUsers
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:

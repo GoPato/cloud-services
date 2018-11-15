@@ -1,4 +1,20 @@
 /* @flow */
+import * as yup from 'yup'
 import { createModel } from 'utils/orm'
 
-export default createModel(process.env.USERS_TABLE || 'Users')
+export default createModel({
+  tableName: process.env.USERS_TABLE || 'Users',
+  schema: yup.object().shape({
+    userId: yup.string().required(),
+    email: yup
+      .string()
+      .email()
+      .required(),
+    phone: yup.string().matches(/^\+([0-9]+)$/),
+    firstName: yup.string().required(),
+    lastName: yup.string().required(),
+    birthday: yup.date(),
+    gender: yup.string().oneOf(['Male', 'Female']),
+    idNumber: yup.string(),
+  }),
+})

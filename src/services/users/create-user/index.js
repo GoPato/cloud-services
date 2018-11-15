@@ -7,8 +7,8 @@ type Event = {
       sub: string,
       email: string,
       phone_number: string,
-      'custom:first_name': string,
-      'custom:last_name': string,
+      name: string,
+      family_name: string,
     },
   },
 }
@@ -20,8 +20,8 @@ export default async function createUser(event: Event, context: null, callback: 
     userId: userAttributes.sub,
     email: userAttributes.email,
     phone: userAttributes.phone_number,
-    firstName: userAttributes['custom:first_name'],
-    lastName: userAttributes['custom:last_name'],
+    firstName: userAttributes.name,
+    lastName: userAttributes.family_name,
   })
 
   await user.save()

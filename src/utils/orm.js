@@ -3,7 +3,7 @@
 import { setupTable, teardownTable } from '@gopato/serverless-dynamodb-local-utils'
 import { doc } from '@gopato/serverless-dynamodb-client'
 
-export function createModel(tableName: string) {
+export function createModel({ tableName, schema }: { tableName: string, schema: Object }) {
   return class Model {
     // Test utils
     static async setupTable() {
@@ -48,6 +48,7 @@ export function createModel(tableName: string) {
     }
 
     async save() {
+      await schema.validate(this, { strict: true })
       await Model.exec('put', { Item: this })
     }
 

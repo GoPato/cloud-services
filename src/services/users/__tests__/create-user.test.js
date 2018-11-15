@@ -12,8 +12,8 @@ it('should create a new user', async () => {
         sub: 'user-4',
         email: 'blackwidow@avengers.io',
         phone_number: '+50680000004',
-        'custom:first_name': 'Natasha',
-        'custom:last_name': 'Romanoff',
+        name: 'Natasha',
+        family_name: 'Romanoff',
       },
     },
   }
@@ -28,6 +28,6 @@ it('should create a new user', async () => {
     firstName: 'Natasha',
     lastName: 'Romanoff',
   })
-  expect(await User.get({ userId: user.userId })).toEqual(user)
+
   expect(callback).toHaveBeenCalledWith(null, event)
 })

@@ -25,7 +25,8 @@
     "@gopato/serverless-dynamodb-client": "^1.1.1",
     "@gopato/serverless-dynamodb-local-utils": "^1.1.2",
     "npdynamodb": "^0.2.15",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "yup": "^0.26.6"
   },
   "devDependencies": {
     "@babel/core": "^7.1.5",

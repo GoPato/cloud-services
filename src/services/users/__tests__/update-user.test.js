@@ -7,14 +7,18 @@ beforeEach(() => User.setupTable())
 afterEach(() => User.teardownTable())
 
 it('should update the requested user', async () => {
-  const { userId } = usersSeed[0]
+  const testUser = usersSeed[0]
+  const { userId } = testUser
+
+  const updateData = {
+    firstName: 'new firstname',
+    lastName: 'new lastname',
+  }
 
   const { user } = await updateUser({
     userId,
-    user: {
-      firstName: 'Updated!',
-    },
+    user: updateData,
   })
 
-  expect(await User.get({ userId })).toEqual(user)
+  expect(user).toEqual({ ...testUser, ...updateData })
 })

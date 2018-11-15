@@ -23,6 +23,11 @@ dataSources:
     config:
       lambdaFunctionArn: { Fn::GetAtt: [GetAllUsersLambdaFunction, Arn] }
       serviceRoleArn: { Fn::GetAtt: [AppSyncLambdaServiceRole, Arn] }
+  - type: AWS_LAMBDA
+    name: UpdateUserDataSource
+    config:
+      lambdaFunctionArn: { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
+      serviceRoleArn: { Fn::GetAtt: [AppSyncLambdaServiceRole, Arn] }
 
 mappingTemplates:
   - dataSource: GetUserDataSource
@@ -35,6 +40,11 @@ mappingTemplates:
     field: users
     request: "users/get-all-users/request.vtl"
     response: "users/get-all-users/response.vtl"
+  - dataSource: UpdateUserDataSource
+    type: Mutation
+    field: updateUser
+    request: "users/update-user/request.vtl"
+    response: "users/update-user/response.vtl"
 
 resources:
   Resources:

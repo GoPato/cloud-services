@@ -38,3 +38,4 @@ resources:
                     # Users
                     - { Fn::GetAtt: [GetAllUsersLambdaFunction, Arn] }
                     - { Fn::GetAtt: [GetUserLambdaFunction, Arn] }
+                    - { Fn::GetAtt: [UpdateUserLambdaFunction, Arn] }
