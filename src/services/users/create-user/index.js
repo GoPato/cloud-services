@@ -22,6 +22,10 @@ export default async function createUser(event: Event, context: null, callback: 
     phone: userAttributes.phone_number,
     firstName: userAttributes.name,
     lastName: userAttributes.family_name,
+    birthday: null,
+    gender: null,
+    idNumber: null,
+    picture: null,
   })
 
   await user.save()

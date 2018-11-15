@@ -27,6 +27,10 @@ it('should create a new user', async () => {
     phone: '+50680000004',
     firstName: 'Natasha',
     lastName: 'Romanoff',
+    birthday: null,
+    gender: null,
+    idNumber: null,
+    picture: null,
   })
 
   expect(callback).toHaveBeenCalledWith(null, event)

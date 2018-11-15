@@ -1,9 +1,18 @@
+enum Gender {
+  MALE
+  FEMALE
+}
+
 type User {
-  userId: ID
-  email: String
-  phone: String
-  firstName: String
-  lastName: String
+  userId: ID!
+  email: String!
+  phone: String!
+  firstName: String!
+  lastName: String!
+  birthday: Int
+  gender: Gender
+  idNumber: Int
+  picture: String
 }
 
 input UserInput {
@@ -11,6 +20,10 @@ input UserInput {
   phone: String
   firstName: String
   lastName: String
+  birthday: Int
+  gender: Gender
+  idNumber: Int
+  picture: String
 }
 
 type Query {
@@ -19,7 +32,7 @@ type Query {
 }
 
 type Mutation {
-  updateUser(userId: ID, user: UserInput): User
+  updateUser(userId: ID, user: UserInput!): User
 }
 
 schema {

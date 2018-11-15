@@ -13,8 +13,12 @@ export default createModel({
     phone: yup.string().matches(/^\+([0-9]+)$/),
     firstName: yup.string().required(),
     lastName: yup.string().required(),
-    birthday: yup.date(),
-    gender: yup.string().oneOf(['Male', 'Female']),
-    idNumber: yup.string(),
+    birthday: yup.date().nullable(),
+    gender: yup
+      .string()
+      .oneOf(['MALE', 'FEMALE', null])
+      .nullable(),
+    idNumber: yup.number().nullable(),
+    picture: yup.string().nullable(),
   }),
 })
