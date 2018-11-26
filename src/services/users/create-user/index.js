@@ -30,5 +30,5 @@ export default async function createUser(event: Event, context: null, callback: 
 
   await user.save()
   callback(null, event)
-  return { user }
+  return { user: user.toJSON() }
 }

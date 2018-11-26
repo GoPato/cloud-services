@@ -13,6 +13,7 @@ type User {
   gender: Gender
   idNumber: Int
   picture: String
+  profileCompleteness: Float!
 }
 
 input UserInput {

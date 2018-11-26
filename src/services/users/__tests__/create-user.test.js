@@ -31,6 +31,7 @@ it('should create a new user', async () => {
     gender: null,
     idNumber: null,
     picture: null,
+    profileCompleteness: expect.any(Number),
   })
 
   expect(callback).toHaveBeenCalledWith(null, event)

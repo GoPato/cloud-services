@@ -31,8 +31,17 @@ export function createModel({ tableName, schema }: { tableName: string, schema: 
     }
 
     static async getAll(): Promise<Model[]> {
-      const { Items } = await this.exec('scan', {})
-      return Items.map(item => new this(item))
+      const { Items: data } = await this.exec('scan', {})
+      const items = data.map(item => new this(item))
+
+      function toArray() {
+        return items.map(item => item.toJSON())
+      }
+
+      return {
+        items,
+        toArray,
+      }
     }
 
     static async get(params: Object): Promise<Model> {
@@ -55,6 +64,23 @@ export function createModel({ tableName, schema }: { tableName: string, schema: 
     async update(data: Object) {
       Object.assign(this, data)
       await this.save()
+    }
+
+    toJSON() {
+      const jsonObj = Object.assign({}, this)
+      const proto = Object.getPrototypeOf(this)
+
+      /* eslint-disable */
+      for (const key of Object.getOwnPropertyNames(proto)) {
+        const desc = Object.getOwnPropertyDescriptor(proto, key)
+        const hasGetter = desc && typeof desc.get === 'function'
+        if (hasGetter) {
+          jsonObj[key] = this[key]
+        }
+      }
+      /* eslint-enable */
+
+      return jsonObj
     }
   }
 }

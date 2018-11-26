@@ -20,5 +20,9 @@ it('should update the requested user', async () => {
     user: updateData,
   })
 
-  expect(user).toEqual({ ...testUser, ...updateData })
+  expect(user).toEqual({
+    ...testUser,
+    ...updateData,
+    profileCompleteness: expect.any(Number),
+  })
 })

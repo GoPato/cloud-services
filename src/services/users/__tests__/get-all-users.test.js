@@ -8,5 +8,12 @@ afterEach(() => User.teardownTable())
 
 it('should return the list of users', async () => {
   const { users } = await getAllUsers()
-  expect(users).toEqual(expect.arrayContaining(usersSeed))
+  expect(users).toEqual(
+    expect.arrayContaining(
+      usersSeed.map(user => ({
+        ...user,
+        profileCompleteness: expect.any(Number),
+      })),
+    ),
+  )
 })

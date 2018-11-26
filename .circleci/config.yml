@@ -48,6 +48,13 @@ jobs:
       - run:
           name: Run tests
           command: yarn test
+  deploy-development:
+    <<: *container_config
+    steps:
+      - *add_workspace
+      - deploy:
+          name: Deploy to development
+          command: yarn deploy --stage development
   deploy-staging:
     <<: *container_config
     steps:
@@ -74,6 +81,13 @@ workflows:
       - test:
           requires:
             - checkout
+      - deploy-development:
+          requires:
+            - lint
+            - test
+          filters:
+            branches:
+              ignore: master
       - deploy-staging:
           requires:
             - lint
