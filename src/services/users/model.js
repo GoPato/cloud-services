@@ -13,7 +13,10 @@ const UserBase = createModel({
     phone: yup.string().matches(/^\+([0-9]+)$/),
     firstName: yup.string().required(),
     lastName: yup.string().required(),
-    birthday: yup.date().nullable(),
+    birthday: yup
+      .string()
+      .matches(/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/)
+      .nullable(),
     gender: yup
       .string()
       .oneOf(['MALE', 'FEMALE', null])
