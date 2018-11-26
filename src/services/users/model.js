@@ -32,6 +32,7 @@ export default class User extends UserBase {
       'lastName',
       'birthday',
       'gender',
+      'idNumber',
       'picture',
     ]
 
