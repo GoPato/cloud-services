@@ -13,6 +13,7 @@ it('should update the requested user', async () => {
   const updateData = {
     firstName: 'new firstname',
     lastName: 'new lastname',
+    birthday: '1994-07-17',
   }
 
   const { user } = await updateUser({
@@ -20,5 +21,9 @@ it('should update the requested user', async () => {
     user: updateData,
   })
 
-  expect(user).toEqual({ ...testUser, ...updateData })
+  expect(user).toEqual({
+    ...testUser,
+    ...updateData,
+    profileCompleteness: expect.any(Number),
+  })
 })

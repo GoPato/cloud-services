@@ -10,5 +10,8 @@ it('should return the requested user', async () => {
   const testUser = usersSeed[0]
   const { userId } = testUser
   const { user } = await getUser({ userId })
-  expect(user).toEqual(testUser)
+  expect(user).toEqual({
+    ...testUser,
+    profileCompleteness: expect.any(Number),
+  })
 })
