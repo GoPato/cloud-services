@@ -9,7 +9,7 @@ type User {
   phone: String!
   firstName: String!
   lastName: String!
-  birthday: Int
+  birthday: AWSDate
   gender: Gender
   idNumber: Int
   picture: String
@@ -21,7 +21,7 @@ input UserInput {
   phone: String
   firstName: String
   lastName: String
-  birthday: Int
+  birthday: AWSDate
   gender: Gender
   idNumber: Int
   picture: String
