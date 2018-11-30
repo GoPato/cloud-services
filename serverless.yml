@@ -51,4 +51,5 @@ functions:
 resources:
   - ${file(src/services/auth/service.yml):resources}
   - ${file(src/services/graphql/service.yml):resources}
+  - ${file(src/services/storage/service.yml):resources}
   - ${file(src/services/users/service.yml):resources}
